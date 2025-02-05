@@ -1,0 +1,76 @@
+import { useState } from 'react'
+import { Button } from "/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "/components/ui/card"
+import { Input } from "/components/ui/input"
+import { Label } from "/components/ui/label"
+import { Textarea } from "/components/ui/textarea"
+import { Search } from "lucide-react"
+
+// Mock data for predictions
+const mockPredictions = (symptoms: string) => {
+  // Simulated prediction logic
+  const conditions = [
+    { name: "Anxiety", explanation: "Anxiety is a common mental health disorder characterized by feelings of tension, worry, and unease.", copingMechanisms: "Try mindfulness exercises, deep breathing, and regular physical activity." },
+    { name: "Depression", explanation: "Depression is a mood disorder that causes a persistent feeling of sadness and loss of interest.", copingMechanisms: "Consider speaking to a therapist, engaging in hobbies, and maintaining a routine." },
+    { name: "Stress", explanation: "Stress is a feeling of emotional or physical tension often resulting from demanding circumstances.", copingMechanisms: "Practice relaxation techniques, prioritize tasks, and ensure adequate rest." }
+  ]
+  return conditions.filter(condition => symptoms.toLowerCase().includes(condition.name.toLowerCase()))
+}
+
+export default function MentalHealthPredictor() {
+  const [symptoms, setSymptoms] = useState('')
+  const [predictions, setPredictions] = useState<{ name: string, explanation: string, copingMechanisms: string }[]>([])
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const predictedConditions = mockPredictions(symptoms)
+    setPredictions(predictedConditions)
+  }
+
+  return (
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4">
+      <Card className="w-full max-w-3xl">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold">Mental Health Predictor</CardTitle>
+          <CardDescription>Enter your symptoms to get predictions and coping mechanisms.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="symptoms" className="block text-sm font-medium leading-6 text-gray-900">Symptoms</Label>
+              <Textarea
+                id="symptoms"
+                value={symptoms}
+                onChange={(e) => setSymptoms(e.target.value)}
+                placeholder="Describe your symptoms here..."
+                className="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              />
+            </div>
+            <Button type="submit" className="w-full">
+              <Search className="mr-2 h-4 w-4" /> Predict
+            </Button>
+          </form>
+        </CardContent>
+        {predictions.length > 0 && (
+          <CardFooter>
+            <div className="space-y-4">
+              {predictions.map((prediction, index) => (
+                <Card key={index} className="mt-4">
+                  <CardHeader>
+                    <CardTitle>{prediction.name}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-700">{prediction.explanation}</p>
+                  </CardContent>
+                  <CardFooter>
+                    <p className="text-gray-700">Coping Mechanisms: {prediction.copingMechanisms}</p>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+          </CardFooter>
+        )}
+      </Card>
+    </div>
+  )
+}
